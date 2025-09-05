@@ -174,17 +174,20 @@
           const textAngle = start + segmentAngle / 2;
       
           // Draw main text
-          const textX = centerX + Math.cos(textAngle) * textRadius;
-          const textY = centerY + Math.sin(textAngle) * textRadius;
+          //const textX = centerX + Math.cos(textAngle) * textRadius;
+          //const textY = centerY + Math.sin(textAngle) * textRadius;
       
-          ctx.save();
-          ctx.translate(textX, textY);
-          //ctx.rotate(textAngle + Math.PI / 2);
-          ctx.fillStyle = "white";
-          ctx.font = "14px Arial"; // main text font size
-          ctx.textAlign = "center";
-          ctx.fillText(seg.text, 0, 0);
-          ctx.restore();
+          // ctx.save();
+          // ctx.translate(textX, textY);
+          // //ctx.rotate(textAngle + Math.PI / 2);
+          // ctx.fillStyle = "white";
+          // ctx.font = "14px Arial"; // main text font size
+          // ctx.textAlign = "center";
+          // ctx.fillText(seg.text, 0, 0);
+          // ctx.restore();
+
+        // Multi-line curved text
+          drawCurvedMultilineText(ctx, seg.text, centerX, centerY, textRadius, textAngle, true);
       
           // Draw emoji below the text
           const emojiRadius = 100; // closer to center
@@ -208,6 +211,70 @@
       ctx.closePath();
       ctx.fill();
     }
+
+    function drawCurvedMultilineText(ctx, text, centerX, centerY, baseRadius, angle, inward=true) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = words[0];
+
+  // Max chars per line before wrapping (adjust as needed)
+  const maxChars = 12;
+
+  for (let i = 1; i < words.length; i++) {
+    if ((currentLine + " " + words[i]).length > maxChars) {
+      lines.push(currentLine);
+      currentLine = words[i];
+    } else {
+      currentLine += " " + words[i];
+    }
+  }
+  lines.push(currentLine);
+
+  // Draw each line as a separate arc
+  const lineHeight = 18; // pixels between lines
+  lines.forEach((line, index) => {
+    const radius = baseRadius - index * lineHeight;
+    drawCurvedText(ctx, line, centerX, centerY, radius, angle, inward);
+  });
+}
+
+// single-line curved text drawer
+function drawCurvedText(ctx, text, centerX, centerY, radius, angle, inward=true) {
+  ctx.save();
+  ctx.translate(centerX, centerY);
+  ctx.rotate(angle);
+
+  if (inward) {
+    ctx.rotate(Math.PI);
+  }
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "white";
+  ctx.font = "13px Arial";
+
+  // measure angular width
+  const textWidth = ctx.measureText(text).width;
+  const angularWidth = textWidth / radius;
+  let startAngle = -angularWidth / 2;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const charWidth = ctx.measureText(char).width;
+    const charAngle = (charWidth / 2) / radius;
+
+    startAngle += charAngle;
+    ctx.save();
+    ctx.rotate(startAngle);
+    ctx.translate(0, -radius);
+    ctx.fillText(char, 0, 0);
+    ctx.restore();
+    startAngle += charAngle;
+  }
+
+  ctx.restore();
+}
+
 
     function getSelectedSegment() {
       if (segments.length === 0) return null;
