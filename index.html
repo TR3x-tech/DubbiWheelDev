@@ -244,7 +244,9 @@
 
         // Multi-line curved text
           //drawCurvedMultilineText(ctx, seg.text, centerX, centerY, textRadius, textAngle, true);
-        drawSliceText(ctx, seg.text, centerX, centerY, textRadius, segmentAngle, textAngle);
+        //drawSliceText(ctx, seg.text, centerX, centerY, textRadius, segmentAngle, textAngle);
+          drawRadialText(ctx, seg.text, centerX, centerY, textRadius, textAngle);
+
         
 
       
@@ -419,6 +421,44 @@ function drawCurvedText(ctx, text, centerX, centerY, radius, angle, inward=true)
         historyList.appendChild(li);
       });
     }
+
+    function drawRadialText(ctx, text, centerX, centerY, radius, angle) {
+      const words = text.split(" ");
+      const fontSize = 14;
+      ctx.font = `${fontSize}px Arial`;
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+    
+      // Combine words into lines that fit inside slice width
+      const maxWidth = 60; // tweak as needed
+      let lines = [];
+      let line = words[0];
+      for (let i = 1; i < words.length; i++) {
+        let testLine = line + " " + words[i];
+        if (ctx.measureText(testLine).width > maxWidth) {
+          lines.push(line);
+          line = words[i];
+        } else {
+          line = testLine;
+        }
+      }
+      lines.push(line);
+    
+      // Rotate text so it points inward along radius
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(angle + Math.PI); // point toward center
+    
+      // Position lines along radius
+      const offset = 10; // distance from edge of slice
+      lines.forEach((lineText, i) => {
+        ctx.fillText(lineText, 0, -radius + i * (fontSize + 2) + offset);
+      });
+    
+      ctx.restore();
+    }
+
 
     function updateSegmentCount() {
       document.getElementById("segmentCount").textContent = segments.length;
