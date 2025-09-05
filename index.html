@@ -133,24 +133,31 @@
       document.getElementById("debugStatus").textContent = status;
     }
     function drawSliceText(ctx, text, centerX, centerY, textRadius, sliceAngle, textAngle) {
-      let fontSize = 16; // start size
+      let fontSize = 16;
       let lines = [];
     
-      while (fontSize > 8) { // shrink until it fits
+      // Shrink font to fit
+      while (fontSize > 8) {
         ctx.font = `${fontSize}px Arial`;
-        const maxWidth = sliceAngle * textRadius * 0.8; // allow margin
+        const maxWidth = sliceAngle * textRadius * 0.8;
         lines = wrapLines(ctx, text, maxWidth);
     
         const totalHeight = lines.length * fontSize * 1.1;
-        if (totalHeight < textRadius * 0.6) {
-          break; // fits
-        }
+        if (totalHeight < textRadius * 0.6) break;
         fontSize -= 1;
       }
     
       ctx.save();
       ctx.translate(centerX, centerY);
-      ctx.rotate(textAngle); // flip inward
+    
+      // Flip text if on bottom half so it always points inward
+      let angleDeg = textAngle * 180 / Math.PI;
+      if (angleDeg > 90 && angleDeg < 270) {
+        ctx.rotate(textAngle + Math.PI); // flip 180 degrees
+      } else {
+        ctx.rotate(textAngle);
+      }
+    
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -162,6 +169,7 @@
     
       ctx.restore();
     }
+
     
     function wrapLines(ctx, text, maxWidth) {
       const words = text.split(" ");
