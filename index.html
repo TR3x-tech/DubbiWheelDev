@@ -132,6 +132,54 @@
     function updateDebugStatus(status) {
       document.getElementById("debugStatus").textContent = status;
     }
+    function drawSliceText(ctx, text, centerX, centerY, textRadius, sliceAngle, textAngle) {
+      let fontSize = 16; // start size
+      let lines = [];
+    
+      while (fontSize > 8) { // shrink until it fits
+        ctx.font = `${fontSize}px Arial`;
+        const maxWidth = sliceAngle * textRadius * 0.8; // allow margin
+        lines = wrapLines(ctx, text, maxWidth);
+    
+        const totalHeight = lines.length * fontSize * 1.1;
+        if (totalHeight < textRadius * 0.6) {
+          break; // fits
+        }
+        fontSize -= 1;
+      }
+    
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(textAngle + Math.PI / 2); // align with slice axis
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+    
+      const offsetY = -(lines.length - 1) * fontSize * 0.55;
+      lines.forEach((line, i) => {
+        ctx.fillText(line, 0, -textRadius + offsetY + i * fontSize * 1.1);
+      });
+    
+      ctx.restore();
+    }
+    
+    function wrapLines(ctx, text, maxWidth) {
+      const words = text.split(" ");
+      const lines = [];
+      let current = words[0];
+    
+      for (let i = 1; i < words.length; i++) {
+        const test = current + " " + words[i];
+        if (ctx.measureText(test).width > maxWidth) {
+          lines.push(current);
+          current = words[i];
+        } else {
+          current = test;
+        }
+      }
+      lines.push(current);
+      return lines;
+    }
 
     function drawWheel() {
       const centerX = 200;
@@ -188,54 +236,8 @@
 
         // Multi-line curved text
           //drawCurvedMultilineText(ctx, seg.text, centerX, centerY, textRadius, textAngle, true);
-        function drawSliceText(ctx, text, centerX, centerY, textRadius, sliceAngle, textAngle) {
-            let fontSize = 16; // start size
-            let lines = [];
-          
-            while (fontSize > 8) { // shrink until it fits
-              ctx.font = `${fontSize}px Arial`;
-              const maxWidth = sliceAngle * textRadius * 0.8; // allow margin
-              lines = wrapLines(ctx, text, maxWidth);
-          
-              const totalHeight = lines.length * fontSize * 1.1;
-              if (totalHeight < textRadius * 0.6) {
-                break; // fits
-              }
-              fontSize -= 1;
-            }
-          
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.rotate(textAngle + Math.PI / 2); // align with slice axis
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-          
-            const offsetY = -(lines.length - 1) * fontSize * 0.55;
-            lines.forEach((line, i) => {
-              ctx.fillText(line, 0, -textRadius + offsetY + i * fontSize * 1.1);
-            });
-          
-            ctx.restore();
-          }
-          
-          function wrapLines(ctx, text, maxWidth) {
-            const words = text.split(" ");
-            const lines = [];
-            let current = words[0];
-          
-            for (let i = 1; i < words.length; i++) {
-              const test = current + " " + words[i];
-              if (ctx.measureText(test).width > maxWidth) {
-                lines.push(current);
-                current = words[i];
-              } else {
-                current = test;
-              }
-            }
-            lines.push(current);
-            return lines;
-          }
+        drawSliceText(ctx, seg.text, centerX, centerY, textRadius, segmentAngle, textAngle);
+        
 
       
           // Draw emoji below the text
