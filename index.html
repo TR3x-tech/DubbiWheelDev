@@ -179,9 +179,9 @@
       
           ctx.save();
           ctx.translate(textX, textY);
-          ctx.rotate(textAngle + Math.PI / 2);
+          //ctx.rotate(textAngle + Math.PI / 2);
           ctx.fillStyle = "white";
-          ctx.font = "16px Arial"; // main text font size
+          ctx.font = "14px Arial"; // main text font size
           ctx.textAlign = "center";
           ctx.fillText(seg.text, 0, 0);
           ctx.restore();
@@ -190,9 +190,9 @@
           const emojiRadius = 100; // closer to center
           ctx.save();
           ctx.translate(centerX + Math.cos(textAngle) * emojiRadius, centerY + Math.sin(textAngle) * emojiRadius);
-          ctx.rotate(textAngle + Math.PI / 2);
+          //ctx.rotate(textAngle + Math.PI / 2);
           ctx.fillStyle = "white";
-          ctx.font = "38px Arial"; // bigger font for emoji
+          ctx.font = "20px Arial"; // bigger font for emoji
           ctx.textAlign = "center";
           ctx.fillText(seg.emoji || "", 0, 0);
           ctx.restore();
