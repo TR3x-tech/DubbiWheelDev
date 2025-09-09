@@ -97,6 +97,17 @@
   <button onclick="revertOriginal()" style="background:#d9534f;">↩ Revert Wheel to Original State</button>
 </div>
 
+  <div style="margin-top: 30px; padding: 15px; border: 2px solid #ccc; border-radius: 10px; background: #f9f9f9; width: 90%; max-width: 600px;">
+  <h3>Add New Item to Wheel</h3>
+  <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+    <input type="text" id="newText" placeholder="Item Text" style="flex:2; padding:5px;" />
+    <input type="text" id="newEmoji" placeholder="Emoji" style="flex:1; padding:5px;" />
+    <input type="color" id="newColor" value="#FF0000" style="flex:1; padding:5px;" />
+    <button onclick="addNewItem()" style="flex:1; background:#4CAF50; color:white;">Add Item</button>
+  </div>
+</div>
+
+
 
 <style>
   canvas {
@@ -509,6 +520,39 @@ function revertOriginal() {
   if (!confirm("This will reset the wheel to its original state. Continue?")) {
     return;
   }
+
+  function addNewItem() {
+  const text = document.getElementById("newText").value.trim();
+  const emoji = document.getElementById("newEmoji").value.trim();
+  const color = document.getElementById("newColor").value;
+
+  if (!text) {
+    alert("Please enter text for the new item.");
+    return;
+  }
+
+  // Create new segment
+  const newSegment = { text, color, emoji };
+
+  // Add to wheel
+  segments.push(newSegment);
+
+  // Save to localStorage
+  localStorage.setItem("segments", JSON.stringify(segments));
+
+  // Update UI
+  updateLists();
+  updateSegmentCount();
+  drawWheel();
+
+  // Clear form
+  document.getElementById("newText").value = "";
+  document.getElementById("newEmoji").value = "";
+  document.getElementById("newColor").value = "#FF0000";
+
+  updateDebugStatus(`Added new item: ${text} ${emoji}`);
+}
+
 
   segments = JSON.parse(JSON.stringify(originalSegments));
   spunItems = [];
