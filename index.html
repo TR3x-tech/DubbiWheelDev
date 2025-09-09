@@ -61,6 +61,21 @@
   <h1>Click to Spin for the Parade!!</h1>
   <canvas id="wheel" width="500" height="500"></canvas>
 
+  <div class="segments-left">
+    Segments remaining: <span id="segmentCount">6</span>
+  </div>
+
+  <div class="buttons">
+    <button id="spinBtn" onclick="spin()">Spin Wheel</button>
+    <button id="resetBtn" onclick="resetWheel()">Reset Wheel</button>
+  </div>
+
+  <div class="history">
+    <h2>Last 5 Results</h2>
+    <ul id="historyList"></ul>
+  </div>
+
+
   //Adding pannels to the side of the wheel for spun/not spun
 
   <div class="lists-container">
@@ -136,20 +151,7 @@
 </style>
 
 
-  <div class="segments-left">
-    Segments remaining: <span id="segmentCount">6</span>
-  </div>
-
-  <div class="buttons">
-    <button id="spinBtn" onclick="spin()">Spin Wheel</button>
-    <button id="resetBtn" onclick="resetWheel()">Reset Wheel</button>
-  </div>
-
-  <div class="history">
-    <h2>Last 5 Results</h2>
-    <ul id="historyList"></ul>
-  </div>
-
+  
   <div class="debug">
     Status: <span id="debugStatus">Ready to spin</span>
   </div>
