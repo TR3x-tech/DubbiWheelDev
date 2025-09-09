@@ -97,13 +97,13 @@
   <button onclick="revertOriginal()" style="background:#d9534f;">↩ Revert Wheel to Original State</button>
 </div>
 
-  <div style="margin-top: 30px; padding: 15px; border: 2px solid #ccc; border-radius: 10px; background: #f9f9f9; width: 90%; max-width: 600px;">
+ <div style="margin-top: 30px; padding: 15px; border: 2px solid #ccc; border-radius: 10px; background: #f9f9f9; width: 90%; max-width: 600px;">
   <h3>Add New Item to Wheel</h3>
-  <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+  <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items:center;">
     <input type="text" id="newText" placeholder="Item Text" style="flex:2; padding:5px;" />
     <input type="text" id="newEmoji" placeholder="Emoji" style="flex:1; padding:5px;" />
     <input type="color" id="newColor" value="#FF0000" style="flex:1; padding:5px;" />
-    <button onclick="addNewItem()" style="flex:1; background:#4CAF50; color:white;">Add Item</button>
+    <button id="addItemBtn" style="flex:1; background:#4CAF50; color:white;">Add Item</button>
   </div>
 </div>
 
@@ -521,7 +521,9 @@ function revertOriginal() {
     return;
   }
 
-  function addNewItem() {
+  document.getElementById("addItemBtn").addEventListener("click", addNewItem);
+
+function addNewItem() {
   const text = document.getElementById("newText").value.trim();
   const emoji = document.getElementById("newEmoji").value.trim();
   const color = document.getElementById("newColor").value;
@@ -531,8 +533,7 @@ function revertOriginal() {
     return;
   }
 
-  // Create new segment
-  const newSegment = { text, color, emoji };
+  const newSegment = { text, emoji, color };
 
   // Add to wheel
   segments.push(newSegment);
