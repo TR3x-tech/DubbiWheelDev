@@ -517,13 +517,28 @@ function moveSelected(direction) {
 }
 
 function revertOriginal() {
-  if (!confirm("This will reset the wheel to its original state. Continue?")) {
-    return;
-  }
+  if (!confirm("This will reset the wheel to its original state. Continue?")) return;
 
-  document.getElementById("addItemBtn").addEventListener("click", addNewItem);
+  segments = JSON.parse(JSON.stringify(originalSegments));
+  spunItems = [];
+  history = [];
+  currentAngle = 0;
 
-function addNewItem() {
+  // Reset localStorage
+  localStorage.removeItem("segments");
+  localStorage.removeItem("spunItems");
+  localStorage.removeItem("history");
+
+  document.getElementById("spinBtn").disabled = false;
+
+  updateLists();
+  updateHistory();
+  updateSegmentCount();
+  drawWheel();
+  updateDebugStatus("Wheel reset to original state");
+}
+
+    function addNewItem() {
   const text = document.getElementById("newText").value.trim();
   const emoji = document.getElementById("newEmoji").value.trim();
   const color = document.getElementById("newColor").value;
@@ -555,26 +570,6 @@ function addNewItem() {
 }
 
 
-  segments = JSON.parse(JSON.stringify(originalSegments));
-  spunItems = [];
-  history = [];
-  currentAngle = 0;
-
-  // Reset localStorage
-  localStorage.removeItem("segments");
-  localStorage.removeItem("spunItems");
-  localStorage.removeItem("history");
-
-  document.getElementById("spinBtn").disabled = false;
-
-  updateLists();
-  updateHistory();
-  updateSegmentCount();
-  drawWheel();
-  updateDebugStatus("Wheel reset to original state");
-}
-
-
     // Initialize
     drawWheel();
     updateHistory();
@@ -585,6 +580,8 @@ function addNewItem() {
       : [];
     
     updateLists();
+    
+    document.getElementById("addItemBtn").addEventListener("click", addNewItem);
 
   </script>
 </body>
