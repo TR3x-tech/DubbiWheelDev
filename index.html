@@ -89,6 +89,12 @@
 <div class="list-controls">
   <button onclick="moveSelected('toSpun')">→ Mark as Spun</button>
   <button onclick="moveSelected('toRemaining')">← Add Back</button>
+  <button onclick="removePermanently()">❌ Remove Permanently</button>
+</div>
+
+<!-- New revert button at very bottom -->
+<div style="margin-top:20px;">
+  <button onclick="revertOriginal()" style="background:#d9534f;">↩ Revert Wheel to Original State</button>
 </div>
 
 
@@ -462,6 +468,67 @@ function moveSelected(direction) {
       updateLists();
 
     }
+
+    function removePermanently() {
+  // Confirm before deleting
+  if (!confirm("Are you sure you want to permanently delete the selected item(s)? This cannot be undone.")) {
+    return;
+  }
+
+  const remainingList = document.getElementById("remainingList");
+  const spunList = document.getElementById("spunList");
+
+  // Remove from Remaining
+  [...remainingList.querySelectorAll(".selected")].forEach(li => {
+    const text = li.dataset.text;
+    const idx = segments.findIndex(s => s.text === text);
+    if (idx > -1) {
+      segments.splice(idx, 1);
+    }
+  });
+
+  // Remove from Spun
+  [...spunList.querySelectorAll(".selected")].forEach(li => {
+    const text = li.dataset.text;
+    const idx = spunItems.findIndex(s => s.text === text);
+    if (idx > -1) {
+      spunItems.splice(idx, 1);
+    }
+  });
+
+  updateLists();
+  updateSegmentCount();
+  drawWheel();
+
+  // save state
+  localStorage.setItem("segments", JSON.stringify(segments));
+  localStorage.setItem("spunItems", JSON.stringify(spunItems));
+}
+
+function revertOriginal() {
+  if (!confirm("This will reset the wheel to its original state. Continue?")) {
+    return;
+  }
+
+  segments = JSON.parse(JSON.stringify(originalSegments));
+  spunItems = [];
+  history = [];
+  currentAngle = 0;
+
+  // Reset localStorage
+  localStorage.removeItem("segments");
+  localStorage.removeItem("spunItems");
+  localStorage.removeItem("history");
+
+  document.getElementById("spinBtn").disabled = false;
+
+  updateLists();
+  updateHistory();
+  updateSegmentCount();
+  drawWheel();
+  updateDebugStatus("Wheel reset to original state");
+}
+
 
     // Initialize
     drawWheel();
