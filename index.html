@@ -386,6 +386,7 @@ function updateLists() {
   segments.forEach((seg) => {
     const li = document.createElement("li");
     li.textContent = seg.text + " " + (seg.emoji || "");
+    li.dataset.text = seg.text;   // ✅ store original text
     li.onclick = () => li.classList.toggle("selected");
     remainingList.appendChild(li);
   });
@@ -393,10 +394,12 @@ function updateLists() {
   spunItems.forEach((seg) => {
     const li = document.createElement("li");
     li.textContent = seg.text + " " + (seg.emoji || "");
+    li.dataset.text = seg.text;   // ✅ store original text
     li.onclick = () => li.classList.toggle("selected");
     spunList.appendChild(li);
   });
 }
+
 
 function moveSelected(direction) {
   const remainingList = document.getElementById("remainingList");
@@ -404,7 +407,7 @@ function moveSelected(direction) {
 
   if (direction === "toSpun") {
     [...remainingList.querySelectorAll(".selected")].forEach(li => {
-      const text = li.textContent.trim().split(" ")[0];
+      const text = li.dataset.text;
       const idx = segments.findIndex(s => s.text === text);
       if (idx > -1) {
         spunItems.push(segments[idx]);
