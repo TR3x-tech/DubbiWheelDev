@@ -179,7 +179,7 @@
       { text: "Decor", color: "#8A2BE2", emoji: "🛋️" },
       { text: "Mystery Item", color: "#FF4500", emoji: "🎲" },
       { text: "Instrument", color: "#1E90FF", emoji: "🎺" },
-      { text: "Floof", color: "#92A8D1", emoji: "🐾" },
+      { text: "Floof", color: "#955251", emoji: "🐾" },
       { text: "Stuffy", color: "#DAA520", emoji: "🧸" },
       { text: "Collection", color: "#F7CAC9", emoji: "🧤" },
       { text: "Ta Das!", color: "#20B2AA", emoji: "🎉" },
@@ -471,7 +471,7 @@ function moveSelected(direction) {
 
     function removePermanently() {
   // Confirm before deleting
-  if (!confirm("Are you sure you want to permanently delete the selected item(s)? This cannot be undone.")) {
+  if (!confirm("Are you sure you want to permanently delete the selected item(s)? This can be undone by selecting the button 'Revert Wheel to Original State'.")) {
     return;
   }
 
