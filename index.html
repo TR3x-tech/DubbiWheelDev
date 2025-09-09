@@ -456,29 +456,28 @@ function moveSelected(direction) {
       document.getElementById("segmentCount").textContent = segments.length;
     }
 
-    function resetWheel() {
-      if (animationId) cancelAnimationFrame(animationId);
+function resetWheel() {
+  if (animationId) cancelAnimationFrame(animationId);
 
-      segments = JSON.parse(JSON.stringify(originalSegments));
-      history = [];
-      currentAngle = 0;
-      isSpinning = false;
+  // Move all spun items back to wheel
+  segments = segments.concat(spunItems);
+  spunItems = [];
 
-      document.getElementById("spinBtn").disabled = false;
+  currentAngle = 0;
+  isSpinning = false;
 
-      // Clear saved state
-      localStorage.removeItem("segments");
-      localStorage.removeItem("history");
+  document.getElementById("spinBtn").disabled = false;
 
-      updateHistory();
-      updateSegmentCount();
-      updateDebugStatus("Ready to spin");
-      drawWheel();
-      spunItems = [];
-      localStorage.removeItem("spunItems");
-      updateLists();
+  // Save state
+  localStorage.setItem("segments", JSON.stringify(segments));
+  localStorage.setItem("spunItems", JSON.stringify(spunItems));
 
-    }
+  updateLists();
+  updateSegmentCount();
+  updateDebugStatus("Ready to spin");
+  drawWheel();
+}
+
 
     function removePermanently() {
   // Confirm before deleting
