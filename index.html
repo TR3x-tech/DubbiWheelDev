@@ -61,12 +61,78 @@
   <h1>Click to Spin for the Parade!!</h1>
   <canvas id="wheel" width="500" height="500"></canvas>
 
+  //Adding pannels to the side of the wheel for spun/not spun
+
+  <div class="lists-container">
+  <div class="list">
+    <h2>Remaining</h2>
+    <ul id="remainingList"></ul>
+  </div>
+  <div class="list">
+    <h2>Spun</h2>
+    <ul id="spunList"></ul>
+  </div>
+</div>
+
+<div class="list-controls">
+  <button onclick="moveSelected('toSpun')">→ Mark as Spun</button>
+  <button onclick="moveSelected('toRemaining')">← Add Back</button>
+</div>
+
+
 <style>
   canvas {
     border: 10px solid #333; /* visible border */
     border-radius: 50%;      /* circular border */
     background: transparent; /* let wheel drawing show fully */
   }
+  .lists-container {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin-top: 30px;
+}
+
+.list {
+  flex: 1;
+  margin: 0 20px;
+  background: #f9f9f9;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.list h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.list li {
+  padding: 5px;
+  margin: 4px 0;
+  background: #eee;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.list li.selected {
+  background: #4CAF50;
+  color: white;
+}
+.list-controls {
+  margin-top: 10px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
 </style>
 
 
@@ -304,6 +370,64 @@ function drawWheel() {
       });
     }
 
+    let spunItems = []; // items already spun
+
+function updateLists() {
+  const remainingList = document.getElementById("remainingList");
+  const spunList = document.getElementById("spunList");
+
+  remainingList.innerHTML = "";
+  spunList.innerHTML = "";
+
+  segments.forEach((seg) => {
+    const li = document.createElement("li");
+    li.textContent = seg.text + " " + (seg.emoji || "");
+    li.onclick = () => li.classList.toggle("selected");
+    remainingList.appendChild(li);
+  });
+
+  spunItems.forEach((seg) => {
+    const li = document.createElement("li");
+    li.textContent = seg.text + " " + (seg.emoji || "");
+    li.onclick = () => li.classList.toggle("selected");
+    spunList.appendChild(li);
+  });
+}
+
+function moveSelected(direction) {
+  const remainingList = document.getElementById("remainingList");
+  const spunList = document.getElementById("spunList");
+
+  if (direction === "toSpun") {
+    [...remainingList.querySelectorAll(".selected")].forEach(li => {
+      const text = li.textContent.trim().split(" ")[0];
+      const idx = segments.findIndex(s => s.text === text);
+      if (idx > -1) {
+        spunItems.push(segments[idx]);
+        segments.splice(idx, 1);
+      }
+    });
+  } else if (direction === "toRemaining") {
+    [...spunList.querySelectorAll(".selected")].forEach(li => {
+      const text = li.textContent.trim().split(" ")[0];
+      const idx = spunItems.findIndex(s => s.text === text);
+      if (idx > -1) {
+        segments.push(spunItems[idx]);
+        spunItems.splice(idx, 1);
+      }
+    });
+  }
+
+  updateLists();
+  updateSegmentCount();
+  drawWheel();
+
+  // save state
+  localStorage.setItem("segments", JSON.stringify(segments));
+  localStorage.setItem("spunItems", JSON.stringify(spunItems));
+}
+
+
     function updateSegmentCount() {
       document.getElementById("segmentCount").textContent = segments.length;
     }
@@ -326,6 +450,10 @@ function drawWheel() {
       updateSegmentCount();
       updateDebugStatus("Ready to spin");
       drawWheel();
+      spunItems = [];
+      localStorage.removeItem("spunItems");
+      updateLists();
+
     }
 
     // Initialize
@@ -333,6 +461,12 @@ function drawWheel() {
     updateHistory();
     updateSegmentCount();
     updateDebugStatus("Ready to spin");
+    spunItems = localStorage.getItem("spunItems") 
+      ? JSON.parse(localStorage.getItem("spunItems")) 
+      : [];
+    
+    updateLists();
+
   </script>
 </body>
 </html>
